@@ -7,15 +7,18 @@ class Figura(object):
 
 class Prostokat(Figura):
     def __init__(self, x: int, y: int):
-        # dokoncz definicje
+        super().__init__()
+        self.x = x
+        self.y = y
 
 class Kwadrat(Prostokat):
     def __init__(self, x: int):
-        # dokoncz definicje
+        super().__init__(x, x)
 
 class Kolo(Figura):
     def __init__(self, r: float):
-        # dokoncz definicje
+        super().__init__()
+        self.r = r
 
 # Funkcje pole
 @dispatch(Figura)
@@ -23,18 +26,39 @@ def pole(instance: Figura):
     print("Pole: Figura")
     return 0
 
-# Napisz wersje 'pole' dla:
-# - Prostokat (bez podania argumentów boków)
-# - Prostokat (z podaniem argumentów boków jako int, int)
-# - Kwadrat (bez podania argumentów boku)
-# - Kwadrat (z podaniem argumentów boku jako int)
-# - Kolo (bez podania argumentów promienia)
-# - Kolo (z podaniem argumentów promienia jako float)
-# Uzywaj print() do weryfikacji wywolan
+@dispatch(Prostokat)
+def pole(instance: Prostokat):
+    print("Pole: Prostokąt")
+    return instance.x * instance.y
 
+@dispatch(Prostokat, int, int)
+def pole(instance: Prostokat, x: int, y: int):
+    print(f"Pole: Prostokąt zmiana wymiarów na {x}x{y}")
+    instance.x = x
+    instance.y = y
+    return instance.x * instance.y
 
+@dispatch(Kwadrat)
+def pole(instance: Kwadrat):
+    print("Pole: Kwadrat")
+    return instance.x ** 2
 
+@dispatch(Kwadrat, int)
+def pole(instance: Kwadrat, x: int):
+    instance.x = x
+    print(f"Pole: Kwadrat zmiana boku; x = {x}")
+    return instance.x ** 2
 
+@dispatch(Kolo)
+def pole(instance: Kolo):
+    print("Pole: Koło")
+    return math.pi * instance.r ** 2
+
+@dispatch(Kolo, float)
+def pole(instance: Kolo, r: float):
+    instance.r = r
+    print(f"Pole: Koło zmiana promienia; r = {r})")
+    return math.pi * instance.r ** 2
 
 # Polimorfizm w czasie wykonywania
 def polaPowierzchni(listaFigur):
@@ -61,4 +85,3 @@ if __name__ == "__main__":
     # Polimorfizm
     print("\n=== Polimorfizm w czasie wykonywania ===")
     polaPowierzchni([a, b, c, d])
-
