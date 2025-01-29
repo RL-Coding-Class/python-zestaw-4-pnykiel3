@@ -5,41 +5,54 @@ from functools import singledispatch, singledispatchmethod
 def log_event(event):
     raise NotImplementedError(f"Brak implementacji dla typu: {type(event)}")
 
-# Napisz obsluge zdarzen str
+@log_event.register
+def _(event: dict):
+    print(f"Logowanie dict: {event}")
 
-# Napisz obsluge zdarzen int
+@log_event.register
+def _(event: int):
+    print(f"Logowanie int: {event}")
 
-# Napisz obsluge zdarzen typu dict
-
+@log_event.register
+def _(event: str):
+    print(f"Logowanie str: {event}")
 
 # Klasa z metodą używającą singledispatchmethod
 class EventHandler:
     def __init__(self):
-        self.event_count = 0 # uwaga: licznik powiekszac o +1 przy kazdej rejestracji
+        self.event_count = 0  # licznik zdarzeń
 
     @singledispatchmethod
     def handle_event(self, event):
-        """Domyślna obsługa zdarzeń"""
         raise NotImplementedError(f"Nieobsługiwany typ zdarzenia: {type(event)}")
 
+    @handle_event.register
+    def _(self, event: list):
+        self.event_count += 1
+        print(f"Obsługa listy: {event} - ilość: {self.event_count}")
 
-    # Napisz obsluge zdarzen str, pamietaj: self.event_count += 1
+    @handle_event.register
+    def _(self, event: int):
+        self.event_count += 1
+        print(f"Obsługa int: {event} - ilość: {self.event_count}")
 
-    # Napisz obsluge zdarzen int
-
-    # Napisz obsluge zdarzen list
-
+    @handle_event.register
+    def _(self, event: str):
+        self.event_count += 1
+        print(f"Obsługa str: {event} - ilość: {self.event_count}")
 
 # Klasa pochodna z nowymi rejestracjami typów
 class DerivedHandler(EventHandler):
 
-    # Napisz obsluge zdarzen int
+    @EventHandler.handle_event.register
+    def _(self, event: int):
+        self.event_count += 1
+        print(f"DerivedHandler: obsługa int: {event} - ilość: {self.event_count}")
 
-    # Napisz obsluge zdarzen float
-
-
-
-
+    @EventHandler.handle_event.register
+    def _(self, event: float):
+        self.event_count += 1
+        print(f"DerivedHandler: obsługa float: {event} - ilość: {self.event_count}")
 
 # Demonstracja użycia
 if __name__ == "__main__":
